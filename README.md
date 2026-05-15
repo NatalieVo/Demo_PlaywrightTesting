@@ -1,6 +1,8 @@
-# Playwright Automation Framework
+# ClaudeCode Playwright Demo
 
-Framework automation testing cho Web UI sử dụng Playwright + TypeScript.
+Framework automation testing cho Web UI sử dụng **Playwright + TypeScript**, tích hợp **Claude Code AI Agent** để hỗ trợ sinh test cases, locators, automation scripts và phân tích test.
+
+> **Demo project** cho [anhtester.com](https://anhtester.com) — minh họa cách tích hợp Claude Code vào quy trình QA Automation.
 
 ## Tech Stack
 
@@ -16,8 +18,8 @@ Framework automation testing cho Web UI sử dụng Playwright + TypeScript.
 
 ```bash
 # Clone repo
-git clone <repo-url>
-cd playwright-automation
+git clone https://github.com/anhtester/ClaudeCode_Playwright_Demo.git
+cd ClaudeCode_Playwright_Demo
 
 # Cài đặt dependencies
 npm install
@@ -29,9 +31,21 @@ npx playwright install
 ## Cấu hình Environment
 
 ```bash
-# Tạo file .env từ template và chỉnh sửa thông tin thực tế
+# Tạo file .env từ template và điền thông tin thực tế
 cp .env.example .env
 ```
+
+Các biến môi trường trong `.env`:
+
+| Biến | Mô tả | Mặc định |
+|---|---|---|
+| `BASE_URL` | URL ứng dụng cần test | `https://crm.anhtester.com/admin/authentication` |
+| `TEST_USER_EMAIL` | Email đăng nhập | — |
+| `TEST_USER_PASSWORD` | Mật khẩu đăng nhập | — |
+| `HEADED` | Bật headed mode | `false` |
+| `ACTION_TIMEOUT` | Timeout cho actions (ms) | `10000` |
+| `NAVIGATION_TIMEOUT` | Timeout cho navigation (ms) | `30000` |
+| `EXPECT_TIMEOUT` | Timeout cho assertions (ms) | `10000` |
 
 ## Chạy Test
 
@@ -56,8 +70,6 @@ npm run test:webkit
 
 ## Allure Report
 
-Không cần cài Allure global — dùng thẳng từ `node_modules` qua `npx`.
-
 ```bash
 # Xóa dữ liệu report cũ
 npm run allure:clean
@@ -81,103 +93,109 @@ npm run report
 ## Project Structure
 
 ```
-playwright-automation/
-├── playwright.config.ts          # Cấu hình Playwright: browsers, timeouts, reporters
-├── package.json                  # Dependencies và npm scripts
-├── tsconfig.json                 # Cấu hình TypeScript compiler
-├── .env                          # Biến môi trường (không commit lên git)
+ClaudeCode_Playwright_Demo/
+├── .claude/                          # Claude Code AI Agent configuration
+│   ├── commands/                     # Slash commands (/generate-locator, /generate-manual-testcases-rbt...)
+│   ├── rules/                        # Quy tắc automation (playwright, selenium, appium, locator...)
+│   ├── skills/                       # AI Skills (qa_automation_engineer, ui_debug_agent...)
+│   └── settings.json                 # Permissions cho project
+├── playwright.config.ts              # Cấu hình Playwright: browsers, timeouts, reporters
+├── package.json                      # Dependencies và npm scripts
+├── tsconfig.json                     # Cấu hình TypeScript compiler
+├── .env.example                      # Template biến môi trường
+├── .env                              # Biến môi trường thực tế (không commit lên git)
 ├── src/
-│   ├── pages/                    # Page Object Model classes
-│   ├── fixtures/                 # Custom Playwright fixtures
-│   ├── utils/                    # Tiện ích dùng chung
-│   └── tests/                    # Test specs (sắp xếp theo module)
-└── test-data/                    # Dữ liệu test tĩnh (JSON)
+│   ├── pages/                        # Page Object Model classes
+│   │   ├── base.page.ts              # Class cha — methods dùng chung
+│   │   ├── login.page.ts             # Locators + actions trang đăng nhập
+│   │   └── dashboard.page.ts         # Locators + actions trang dashboard
+│   ├── fixtures/                     # Custom Playwright fixtures
+│   │   ├── base.fixture.ts           # Inject Page Objects vào test
+│   │   └── auth.fixture.ts           # Fixture tự động login trước test
+│   ├── utils/                        # Tiện ích dùng chung
+│   │   ├── env.config.ts             # Đọc và export biến môi trường (type-safe)
+│   │   ├── test-data.ts              # TestDataGenerator — sinh data động, traceable
+│   │   ├── helpers.ts                # Hàm tiện ích chung
+│   │   └── global-setup.ts           # Global setup chạy trước toàn bộ test suite
+│   └── tests/                        # Test specs (tổ chức theo module)
+│       └── auth/
+│           └── login.spec.ts         # Test cases cho chức năng đăng nhập
+└── test-data/                        # Dữ liệu test tĩnh (JSON)
+    └── users.json                    # Dataset users: valid, admin, invalid cases
 ```
 
-### Mô tả chi tiết
+## Claude Code AI Integration
 
-#### `playwright.config.ts`
-File cấu hình trung tâm của framework:
-- **Browsers:** Chromium, Firefox, WebKit
-- **Viewport:** 1920×1080 (desktop)
-- **Reporters:** HTML report + Allure + list (console)
-- **Timeouts:** `timeout` 60s, `actionTimeout` 10s, `navigationTimeout` 30s
-- **CI mode:** tự bật `retries: 2`, `workers: 1`, `headless: true` khi có biến `CI=true`
-- **Artifacts khi fail:** screenshot, video, trace
+Project tích hợp **Claude Code** với bộ slash commands và skills chuyên biệt cho QA Automation:
 
-#### `src/pages/`
-Chứa toàn bộ **Page Object classes** — mỗi file đại diện cho 1 trang/module UI.
+### Slash Commands
 
-| File | Vai trò |
+| Command | Mô tả |
 |---|---|
-| `base.page.ts` | Class cha — chứa các methods dùng chung: `navigate`, `click`, `fill`, `getText`, `waitForVisible`, `screenshot`... Mọi Page class đều kế thừa từ đây |
-| `login.page.ts` | Locators + actions cho trang đăng nhập |
-| `dashboard.page.ts` | Locators + actions cho trang dashboard sau login |
+| `/generate-locator` | Sinh locator ổn định từ DOM thực tế |
+| `/generate-manual-testcases-rbt` | Sinh manual test cases theo quy trình AI-RBT 6 bước |
+| `/generate-testcases-from-requirements` | Sinh test cases nhanh từ requirements |
+| `/generate-automation-from-ui-flow` | Chạy UI flow thực tế, thu thập locators, sinh automation script |
+| `/generate-automation-from-testcases` | Convert manual test cases thành automation scripts |
+| `/generate-automation-framework` | Scaffold automation framework hoàn chỉnh |
+| `/generate-application-test-plan` | Khám phá ứng dụng và sinh test plan |
+| `/generate-requirements-from-website` | Phân tích website và sinh requirements document |
+| `/generate-api-tests-from-swagger` | Sinh API tests từ Swagger/OpenAPI spec |
+| `/generate-test-data` | Sinh test data có cấu trúc, unique, traceable |
+| `/generate-cross-module-test-plan` | Sinh test plan cho tính năng đa module |
+| `/generate-combinatorial-test-data` | Sinh test data theo ma trận kết hợp |
+| `/analyze-flaky-tests` | Phân tích và khắc phục flaky tests |
+| `/analyze-requirement-document` | Phân tích requirement document chi tiết |
+| `/fetch-jira-requirements` | Lấy requirements từ Jira ticket |
+| `/import-test-results-xray` | Đẩy kết quả test lên Xray Test Management |
 
-> **Quy tắc:** Locators khai báo `private readonly` ở đầu class. Methods mô tả hành vi người dùng. **Không đặt assertions trong Page class.**
+### AI Rules
 
-#### `src/fixtures/`
-Mở rộng `test` object của Playwright để inject Page Objects tự động vào test.
+Bộ quy tắc trong `.claude/rules/` được load tự động vào mọi session:
 
-| File | Vai trò |
-|---|---|
-| `base.fixture.ts` | Extend `test` base — inject `loginPage`, `dashboardPage` vào mọi test |
-| `auth.fixture.ts` | Extend `base.fixture` — thêm fixture `authenticatedPage` tự động login trước khi test chạy |
-
-> **Cách dùng:** Import `test` từ fixture thay vì từ `@playwright/test` để có sẵn Page Objects mà không cần khởi tạo thủ công.
-
-#### `src/utils/`
-Các tiện ích dùng chung toàn framework.
-
-| File | Vai trò |
-|---|---|
-| `env.config.ts` | Đọc biến môi trường từ `.env`, export object `ENV` với đầy đủ type-safe config: `BASE_URL`, `TEST_USER_EMAIL`, `TEST_USER_PASSWORD`, timeouts... |
-| `test-data.ts` | Class `TestDataGenerator` — sinh dữ liệu test động: `generateEmail`, `generateUsername`, `generatePhone`, `generatePassword`, `generateUniqueId`... Format: `auto_{testName}_{timestamp}_{random}` |
-| `helpers.ts` | Hàm tiện ích chung: `waitForPageLoad`, `formatDate`, `parseJsonFile` |
-
-#### `src/tests/`
-Chứa test specs, tổ chức theo module/tính năng.
-
-```
-tests/
-└── auth/
-    └── login.spec.ts     # Test cases cho chức năng đăng nhập
-```
-
-> Mỗi test file import `test` từ fixture tương ứng. Test độc lập, không phụ thuộc nhau.
-
-#### `test-data/`
-Dữ liệu test tĩnh dạng JSON — dùng cho các test cần tập dữ liệu cố định.
-
-| File | Nội dung |
-|---|---|
-| `users.json` | Tập dữ liệu user: `validUser`, `adminUser`, `invalidUsers` (empty username, empty password, invalid format) |
+- `playwright_rules.md` — Quy tắc Playwright (locator priority, wait strategy, viewport)
+- `selenium_rules.md` — Quy tắc Selenium WebDriver
+- `appium_rules.md` — Quy tắc Appium Mobile
+- `automation_rules.md` — Quy tắc chung (POM, naming, test independence)
+- `locator_strategy.md` — Chiến lược chọn locator tối ưu
 
 ## Conventions
 
 ### Page Object Model (POM)
 
 - Mỗi page/module UI → 1 Page class trong `src/pages/`
-- Locators khai báo dạng `private readonly` ở đầu class
+- Locators khai báo `private readonly` ở đầu class
 - Methods mô tả hành vi người dùng
 - Assertions chỉ đặt trong test files, không trong Page class
 
-### Locator Priority
+### Locator Priority (Playwright)
 
-1. `getByRole()` — Semantic elements
-2. `getByLabel()` — Form fields
-3. `getByPlaceholder()` — Input placeholders
+1. `getByRole()` — Semantic elements (button, link, heading...)
+2. `getByLabel()` — Form fields có label
+3. `getByPlaceholder()` — Inputs có placeholder
 4. `getByText()` — Text content
-5. `getByTestId()` — `data-testid` attribute
+5. `getByTestId()` — Element có `data-testid`
 6. `locator("css")` — Fallback
 
 ### Test Data
 
 - Dữ liệu unique dùng `TestDataGenerator`
 - Format: `auto_{testName}_{timestamp}_{random}`
-- Không hardcode email, username, ID
+- Không hardcode email, username, ID trong test
 
 ### Wait Strategy
 
 - Dùng Playwright auto-waiting + `expect()` assertions
 - **KHÔNG** dùng `page.waitForTimeout()` hoặc `setTimeout`
+
+## CI/CD
+
+Project hỗ trợ chạy trên CI với GitHub Actions. Khi biến `CI=true`:
+- `retries: 2` — tự retry khi fail
+- `workers: 1` — chạy tuần tự
+- `headless: true` — không mở browser UI
+- Artifacts: screenshot, video, trace khi test fail
+
+## License
+
+MIT
