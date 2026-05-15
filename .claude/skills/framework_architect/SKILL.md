@@ -289,8 +289,8 @@ project-root/
 
 Agent PHẢI tuân thủ các rules chi tiết:
 
-- `.claude/rules/automation_rules.md` — General automation best practices
-- `.claude/rules/locator_strategy.md` — Locator selection priority
-- `.claude/rules/playwright_rules.md` — Playwright-specific rules
-- `.claude/rules/selenium_rules.md` — Selenium-specific rules
-- `.claude/rules/appium_rules.md` — Appium mobile automation rules
+- `.agent/rules/automation_rules.md` — General automation best practices
+- `.agent/rules/locator_strategy.md` — Locator selection priority
+- `.agent/rules/playwright_rules.md` — Playwright-specific rules
+- `.agent/rules/selenium_rules.md` — Selenium-specific rules
+- `.agent/rules/appium_rules.md` — Appium mobile automation rules

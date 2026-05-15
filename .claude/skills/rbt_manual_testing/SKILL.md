@@ -93,7 +93,12 @@ Sinh test cases **nhanh, đủ chất lượng** từ requirements/user stories 
    - **Boundary Value Analysis (BVA):** Test giá trị tại ranh giới
    - **Decision Table:** Liệt kê tổ hợp điều kiện (nếu có nhiều rules)
    - **State Transition:** Test chuyển đổi trạng thái (nếu có workflow)
-4. **Sinh test cases** với đầy đủ fields:
+4. **Validation chuyên biệt từng trường (Field-Level Validation):**
+   - Liệt kê **tất cả input fields** trên form/UI
+   - Sinh validation test cases **riêng cho TỪNG trường** theo đặc tính riêng của nó
+   - Áp dụng checklist validation theo loại field (xem bảng Field-Level Validation bên dưới)
+   - **KHÔNG** gộp validation nhiều trường vào 1 test case
+5. **Sinh test cases** với đầy đủ fields:
    - TC ID (format: `[DỰ_ÁN]_[MODULE]_TC_[SỐ]`)
    - Module
    - Test Case Title / Test Scenario
@@ -102,7 +107,7 @@ Sinh test cases **nhanh, đủ chất lượng** từ requirements/user stories 
    - Expected Results (đánh số tương ứng)
    - Test Data (**phải cụ thể**, không placeholder)
    - Priority (Critical / High / Medium / Low)
-5. **Xuất ra bảng Markdown** chuẩn, sẵn sàng copy sang Excel/Jira
+6. **Xuất ra bảng Markdown** chuẩn, sẵn sàng copy sang Excel/Jira
 
 ## Bảng Output
 
@@ -123,12 +128,34 @@ Sinh test cases **nhanh, đủ chất lượng** từ requirements/user stories 
 ✅ Đúng: "Nhập 256 ký tự vào trường Name (max: 255)"
 ```
 
+## Bảng Field-Level Validation (áp dụng cho cả 2 modes)
+
+Khi form/UI có các input fields, agent **BẮT BUỘC** phải liệt kê từng trường và sinh validation TCs riêng theo loại:
+
+| Loại Field | Validation cần test |
+|---|---|
+| **Text (Name, Address...)** | Required/Optional · Min length · Max length · Chỉ khoảng trắng (whitespace-only) · Ký tự đặc biệt (`<>&"'`) · XSS injection (`<script>alert(1)</script>`) · SQL injection (`' OR 1=1--`) · Unicode/Emoji · Leading/trailing spaces |
+| **Email** | Format hợp lệ (`user@domain.com`) · Thiếu `@` · Thiếu domain · Domain không hợp lệ · Nhiều `@` · Ký tự đặc biệt trước `@` · Max length · Case sensitivity · Email đã tồn tại (nếu unique) |
+| **Phone** | Chỉ chấp nhận số · Prefix hợp lệ (ví dụ: `+84`, `0`) · Min/Max length · Chữ cái xen lẫn · Dấu `-`, `.`, khoảng trắng · Mã vùng không hợp lệ |
+| **Date / DateTime** | Format đúng (dd/MM/yyyy, ISO...) · Ngày không tồn tại (`31/02`, `30/02`) · Năm nhuận (`29/02/2024`) · Ngày quá khứ / tương lai (tùy business rule) · Giá trị min/max date · Timezone (nếu áp dụng) |
+| **Number / Currency** | Min/Max value · Số âm · Số 0 · Số thập phân · Ký tự không phải số · Overflow (số cực lớn) · Leading zeros · Định dạng currency (dấu phẩy, dấu chấm) |
+| **Dropdown / Select** | Giá trị mặc định · Tất cả options hợp lệ · Option bị disabled · Thay đổi selection · Required validation (chưa chọn) |
+| **Checkbox / Radio** | Trạng thái mặc định · Check/Uncheck · Required validation · Nhóm radio (chỉ chọn 1) |
+| **File Upload** | File type hợp lệ/không hợp lệ · Max size · File rỗng (0 KB) · Tên file có ký tự đặc biệt · Multiple files (nếu cho phép) · Kéo thả vs nút chọn |
+| **Password** | Min/Max length · Yêu cầu ký tự đặc biệt · Yêu cầu chữ hoa/thường · Yêu cầu số · Copy-paste bị chặn? · Hiện/ẩn password · Confirm password khớp/không khớp |
+| **Textarea** | Max length · Line breaks · HTML tags · Resize (nếu UI cho phép) · Character counter (nếu có) |
+
+> **Nguyên tắc:** Mỗi trường có đặc tính riêng → validation riêng. Agent PHẢI phân tích từng field trước khi sinh TCs, không được dùng chung 1 bộ validation cho tất cả fields.
+
 ## Anti-Patterns (Mode QUICK)
 
 - ❌ Sinh test data chung chung / placeholder
 - ❌ Chỉ có Happy Path, thiếu Negative/Boundary
 - ❌ Bỏ qua validation rules trong requirements
 - ❌ Test Steps mơ hồ ("nhập dữ liệu" → phải ghi rõ nhập gì, ở đâu)
+- ❌ Gộp validation nhiều trường vào 1 test case → mỗi trường phải có TC validation riêng
+- ❌ Dùng chung 1 bộ validation cho tất cả fields (mỗi field type có checklist riêng)
+- ❌ Bỏ qua security validation (XSS, SQL injection) cho text fields
 
 ---
 
@@ -244,12 +271,17 @@ Quy trình bài bản, tuần tự cho module phức tạp. Bao gồm phân tíc
    - Happy Path
    - Negative Path (giá trị biên, vượt ký tự)
    - Edge Cases (timeout, mất kết nối...)
-4. Áp dụng **kỹ thuật thiết kế test case** phù hợp:
+4. **Validation chuyên biệt từng trường (Field-Level Validation):**
+   - Liệt kê **tất cả input fields** trên form/UI đang test
+   - Sinh validation TCs **riêng cho TỪNG trường** theo đặc tính riêng
+   - Tham chiếu **Bảng Field-Level Validation** ở phần Mode QUICK để chọn validation phù hợp
+   - **KHÔNG** gộp validation nhiều trường vào 1 TC
+5. Áp dụng **kỹ thuật thiết kế test case** phù hợp:
    - **Equivalence Partitioning:** Chia input thành nhóm tương đương, test đại diện mỗi nhóm
    - **Boundary Value Analysis (BVA):** Test giá trị tại ranh giới (min, min+1, max-1, max)
    - **Decision Table:** Liệt kê tổ hợp điều kiện → kết quả (cho logic nhiều điều kiện)
    - **State Transition:** Test chuyển đổi trạng thái hợp lệ + không hợp lệ (cho workflow)
-5. Nếu scenarios quá nhiều → sinh từng Module một, hỏi user để tiếp tục
+6. Nếu scenarios quá nhiều → sinh từng Module một, hỏi user để tiếp tục
 
 **Output:** Danh sách Test Cases chi tiết có Risk Level.
 
@@ -287,6 +319,10 @@ Quy trình bài bản, tuần tự cho module phức tạp. Bao gồm phân tíc
 - ❌ Sinh tất cả test cases 1 lần cho hệ thống lớn (phải chia module)
 - ❌ Chỉ có Happy Path, thiếu Negative/Boundary cases (QUICK)
 - ❌ Test Steps mơ hồ, không ghi rõ dữ liệu nhập
+- ❌ Gộp validation nhiều trường vào 1 test case → mỗi trường phải có TC validation riêng
+- ❌ Dùng chung 1 bộ validation cho tất cả fields (Email ≠ Phone ≠ Date ≠ Text)
+- ❌ Bỏ qua security validation (XSS, SQL injection) cho text/textarea fields
+- ❌ Không liệt kê danh sách fields trước khi sinh validation TCs
 
 ---
 

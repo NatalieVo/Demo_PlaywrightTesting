@@ -8,7 +8,7 @@ skills:
 
 # Workflow: Sinh Automation từ UI Flow
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`ui_debug_agent`** (tại `.claude/skills/ui_debug_agent/SKILL.md`) trước khi bắt đầu. Ngoài ra tham khảo thêm skill **`smart_locator_agent`** để sinh locator ổn định và **`qa_automation_engineer`** cho quy tắc automation chung.
+> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`ui_debug_agent`** (tại `.agent/skills/ui_debug_agent/SKILL.md`) trước khi bắt đầu. Ngoài ra tham khảo thêm skill **`smart_locator_agent`** để sinh locator ổn định và **`qa_automation_engineer`** cho quy tắc automation chung.
 
 Workflow này giúp agent **thực thi trực tiếp** một chuỗi thao tác UI trên browser thật, thu thập locators từ DOM thực tế, và sinh automation scripts hoàn chỉnh — tất cả trong một luồng tự động, không cần manual test case có sẵn.
 
@@ -109,7 +109,7 @@ Nếu user chưa cung cấp đủ → hỏi:
    | 4 | Click | Login button | `getByRole('button', {name: 'Login'})` | `button[type=submit]` | ✅ |
    | 5 | Assert | Dashboard title | `getByRole('heading', {name: 'Dashboard'})` | `.dashboard-title` | ✅ |
 
-4. **Locator Priority** (tuân thủ `.claude/rules/locator_strategy.md`):
+4. **Locator Priority** (tuân thủ `.agent/rules/locator_strategy.md`):
 
    **Playwright:**
    `getByRole()` → `getByLabel()` → `getByPlaceholder()` → `getByText()` → `getByTestId()` → CSS → XPath

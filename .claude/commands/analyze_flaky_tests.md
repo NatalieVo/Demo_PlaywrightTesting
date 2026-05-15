@@ -8,7 +8,7 @@ skills:
 
 # Workflow: Phân Tích & Khắc Phục Flaky Tests
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`flaky_test_analyzer`** (tại `.claude/skills/flaky_test_analyzer/SKILL.md`) trước khi bắt đầu. Ngoài ra, tham khảo thêm skill **`smart_locator_agent`** và **`locator_healer_agent`** khi cần sửa/thay locator.
+> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`flaky_test_analyzer`** (tại `.agent/skills/flaky_test_analyzer/SKILL.md`) trước khi bắt đầu. Ngoài ra, tham khảo thêm skill **`smart_locator_agent`** và **`locator_healer_agent`** khi cần sửa/thay locator.
 
 Workflow này giúp agent tự động phân tích các automation test không ổn định (lúc pass lúc fail), xác định root cause chính xác, và (tùy mode) tự động sửa code để stabilize test.
 
@@ -155,7 +155,7 @@ Agent cần ít nhất **1 trong các input** sau từ user:
 
    **Fix Locator:**
    - Dùng skill `locator_healer_agent` để thay thế locator hỏng
-   - Tuân thủ locator priority trong `.claude/rules/locator_strategy.md`
+   - Tuân thủ locator priority trong `.agent/rules/locator_strategy.md`
    - Verify locator mới trên DOM thực tế trước khi commit vào code
 
    **Fix Timing:**

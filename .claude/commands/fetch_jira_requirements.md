@@ -6,7 +6,7 @@ skills:
 
 # Workflow: Fetch Jira Requirements
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`jira_integration`** (tại `.claude/skills/jira_integration/SKILL.md`) để biết cách sử dụng scripts trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`jira_integration`** (tại `.agent/skills/jira_integration/SKILL.md`) để biết cách sử dụng scripts trước khi bắt đầu.
 
 Workflow này giúp lấy requirements, user stories, hoặc issues từ Jira và chuyển thành tài liệu phục vụ test automation.
 

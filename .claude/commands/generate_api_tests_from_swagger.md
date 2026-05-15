@@ -7,7 +7,7 @@ skills:
 
 # Workflow: Sinh API Tests từ Swagger/OpenAPI
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`qa_automation_engineer`** (tại `.claude/skills/qa_automation_engineer/SKILL.md`) trước khi bắt đầu. Ngoài ra, tham khảo thêm skill **`test_data_generator`** để sinh test data đúng chuẩn.
+> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`qa_automation_engineer`** (tại `.agent/skills/qa_automation_engineer/SKILL.md`) trước khi bắt đầu. Ngoài ra, tham khảo thêm skill **`test_data_generator`** để sinh test data đúng chuẩn.
 
 Workflow này giúp agent phân tích Swagger/OpenAPI specification, xác định các endpoints, sinh API test cases có cấu trúc, và (tùy mode) tự động sinh automation scripts hoàn chỉnh.
 
@@ -74,12 +74,14 @@ Workflow này giúp agent phân tích Swagger/OpenAPI specification, xác địn
 
 ### Bước 3: Sinh API Test Scenarios & Test Data
 
-1. **Với mỗi endpoint** trong scope đã xác nhận, sinh test scenarios theo 5 loại:
+1. **Với mỗi endpoint** trong scope đã xác nhận, sinh test scenarios theo 7 loại:
    - **✅ Happy Path** — Request hợp lệ, response đúng schema + status code
    - **❌ Negative — Validation** — Thiếu required fields, sai data type, vượt max length
    - **❌ Negative — Auth** — Không có token, token hết hạn, token sai role
    - **🔲 Boundary** — Min/max values, empty string, null, special characters
    - **⚡ Edge Cases** — Concurrent requests, duplicate creation, large payload, unicode/emoji
+   - **🔒 Security** — SQL injection, XSS, IDOR, sensitive data exposure (xem mục 5 bên dưới)
+   - **📄 Pagination & Filtering** — Phân trang, sắp xếp, tìm kiếm (xem mục 6 bên dưới)
 
 2. **Với mỗi scenario**, xác định rõ:
    - **Request:** Method, URL, Headers, Body/Params (giá trị cụ thể)
@@ -91,6 +93,74 @@ Workflow này giúp agent phân tích Swagger/OpenAPI specification, xác địn
    - Data invalid cho Negative cases (mỗi field 1 bộ negative)
    - Boundary values theo schema constraints (minLength, maxLength, min, max, pattern)
    - Data phải **unique + traceable** (VD: `auto_api_1712049200@test.com`)
+
+4. **Field-Level Validation cho Request Body (BẮT BUỘC):**
+
+   Với mỗi endpoint có request body (POST/PUT/PATCH), agent **PHẢI liệt kê từng field** trong body và sinh negative TCs riêng cho TỪNG field:
+
+   | Loại Field | Validation cần test |
+   |---|---|
+   | **String (name, title...)** | Required → gửi thiếu · Empty string `""` · Chỉ whitespace `"   "` · Vượt maxLength · Dưới minLength · Ký tự đặc biệt `<>&"'` · Unicode/Emoji · XSS payload `<script>alert(1)</script>` · SQL injection `' OR 1=1--` |
+   | **Email** | Format sai (thiếu `@`, thiếu domain) · Email trùng (nếu unique) · Max length · Case sensitivity |
+   | **Number (age, price...)** | Kiểu string thay vì number · Số âm · Số 0 · Số thập phân (nếu integer) · Overflow (`999999999999`) · Min/Max value |
+   | **Boolean** | Gửi string `"true"` thay vì boolean `true` · Gửi `null` · Gửi số `1`/`0` |
+   | **Date/DateTime** | Format sai · Ngày không tồn tại (`2024-02-31`) · Ngày tương lai/quá khứ (tùy rule) · Timezone khác nhau |
+   | **Enum** | Giá trị ngoài enum · Case sensitivity · Empty string |
+   | **Array** | Mảng rỗng `[]` · Mảng quá nhiều phần tử · Phần tử sai type · Phần tử trùng lặp |
+   | **Object (nested)** | Thiếu required sub-fields · Extra fields không có trong schema · Nested object `null` |
+   | **File (multipart)** | Sai MIME type · Quá dung lượng · File rỗng (0 bytes) · Tên file ký tự đặc biệt |
+
+   **Ví dụ — POST /api/customers `{ name, email, phone, age }`:**
+   ```
+   → Field "name" (string, required, maxLength: 100):
+     TC: Gửi thiếu field name → 400 + error message
+     TC: name = "" (empty) → 400
+     TC: name = "   " (whitespace) → 400
+     TC: name = 101 ký tự → 400 (vượt max)
+     TC: name = "<script>alert(1)</script>" → 400 hoặc sanitized
+   
+   → Field "email" (string, required, format: email):
+     TC: email = "invalid" → 400
+     TC: email = "test@" → 400
+     TC: email trùng user khác → 409 Conflict
+   
+   → Field "age" (integer, min: 0, max: 150):
+     TC: age = "abc" → 400 (sai type)
+     TC: age = -1 → 400 (dưới min)
+     TC: age = 151 → 400 (vượt max)
+     TC: age = 18.5 → 400 (decimal thay vì integer)
+   ```
+
+   > **Nguyên tắc:** Mỗi field có schema riêng → validation TCs riêng. KHÔNG gộp nhiều fields vào 1 TC. Ưu tiên test từng field độc lập trước, sau đó test kết hợp.
+
+5. **API Security Testing:**
+
+   Sinh test cases bảo mật cho mỗi endpoint:
+
+   | Loại | Test Scenarios |
+   |---|---|
+   | **Injection** | SQL injection trong query params (`?id=1 OR 1=1`) · SQL injection trong body fields · XSS trong input fields · Command injection (nếu API xử lý shell) |
+   | **IDOR** | Truy cập resource của user khác bằng ID (`GET /users/999` khi user chỉ có quyền xem user 123) · Thay đổi ID trong PUT/DELETE để sửa/xóa resource không phải của mình |
+   | **Auth Bypass** | Gọi API không có token → phải 401 · Token hết hạn → 401 · Token của role thấp gọi API role cao → 403 · Token bị tamper (sửa payload) → 401 |
+   | **Sensitive Data** | Response không trả về password/secret · Response không leak internal IDs/stack traces · Headers không leak server info (`X-Powered-By`, `Server`) |
+   | **Rate Limiting** | Gửi nhiều request liên tục → phải bị giới hạn (429) · Brute force login → lock account |
+   | **CORS** | Kiểm tra `Access-Control-Allow-Origin` header · Kiểm tra preflight request (OPTIONS) |
+
+6. **Pagination & Filtering Tests (cho GET List endpoints):**
+
+   | Test Type | Scenarios |
+   |---|---|
+   | **Pagination** | Không truyền page/limit → dùng default · `page=1&limit=10` → đúng 10 items · `page=999` → trả mảng rỗng (không lỗi) · `limit=0` hoặc `limit=-1` → xử lý hợp lý · `limit=10000` (quá lớn) → giới hạn hoặc lỗi |
+   | **Sorting** | `sort=name&order=asc` → kết quả đúng thứ tự · `sort=invalid_field` → lỗi hoặc ignore · Case sensitivity trong sort |
+   | **Filtering** | Filter theo từng field hỗ trợ · Filter với giá trị không tồn tại → trả mảng rỗng · Filter với ký tự đặc biệt · Kết hợp nhiều filter cùng lúc |
+   | **Search** | Tìm kiếm partial match · Tìm kiếm case-insensitive · Tìm kiếm với ký tự đặc biệt · Tìm kiếm empty string |
+
+7. **Phân biệt PUT vs PATCH (nếu API có cả 2):**
+
+   | Method | Test Focus |
+   |---|---|
+   | **PUT** | Gửi đầy đủ tất cả fields → cập nhật toàn bộ · Gửi thiếu optional field → field đó bị reset/null · Gửi thiếu required field → 400 |
+   | **PATCH** | Gửi chỉ 1 field → chỉ field đó thay đổi, các field khác giữ nguyên · Gửi body rỗng `{}` → không thay đổi gì (hoặc 400) · Gửi field không tồn tại → ignore hoặc 400 |
 
 ### Bước 4: Đóng gói API Test Cases (Output — Mode SPEC)
 
@@ -145,6 +215,39 @@ Workflow này giúp agent phân tích Swagger/OpenAPI specification, xác địn
    │   └── auth.api.spec.ts
    └── fixtures/
        └── api-fixtures.ts     # Shared fixtures (auth tokens, etc.)
+   ```
+
+   **Requests + Pytest (Python):**
+   ```
+   tests/
+   ├── api/
+   │   ├── conftest.py          # Fixtures: base_url, auth_token, api_client
+   │   ├── helpers/
+   │   │   ├── base_api.py      # Base API client (requests.Session)
+   │   │   ├── user_api.py      # API methods per resource
+   │   │   └── test_data.py     # Data generators
+   │   ├── models/
+   │   │   ├── user_model.py    # Pydantic/dataclass models
+   │   │   └── response_model.py
+   │   ├── test_user_api.py     # Test file per resource
+   │   └── test_auth_api.py
+   └── pytest.ini               # Pytest config
+   ```
+
+   **Supertest + Jest (TypeScript):**
+   ```
+   tests/
+   ├── api/
+   │   ├── helpers/
+   │   │   ├── base-api.ts      # Supertest agent config
+   │   │   ├── user-api.ts      # API methods per resource
+   │   │   └── test-data.ts     # Data generators
+   │   ├── models/
+   │   │   └── user.model.ts    # TypeScript interfaces
+   │   ├── user.api.test.ts     # Test file per resource
+   │   └── auth.api.test.ts
+   ├── jest.config.ts            # Jest config
+   └── setup.ts                  # Global setup (auth token)
    ```
 
 2. **Sinh code** theo thứ tự:
@@ -212,6 +315,9 @@ Workflow này giúp agent phân tích Swagger/OpenAPI specification, xác địn
 | Auth endpoint không rõ | Spec không document auth flow | Hỏi user về auth method và cách lấy token |
 | Response schema khác spec | API thực tế không khớp với document | Note là known issue, adjust test theo response thực tế |
 | Rate limiting | API có giới hạn request/phút | Thêm delay giữa các test hoặc dùng retry logic |
+| CORS blocked | Browser chặn cross-origin request | Kiểm tra `Access-Control-Allow-Origin` header, test trực tiếp bằng HTTP client (không qua browser) |
+| 405 Method Not Allowed | Gọi sai HTTP method | Kiểm tra lại spec — xác nhận method đúng (PUT vs PATCH, POST vs PUT) |
+| SSL/TLS Certificate Error | Self-signed cert hoặc expired | Thêm option skip SSL verification trong test config (chỉ cho test environment) |
 
 ## Output
 

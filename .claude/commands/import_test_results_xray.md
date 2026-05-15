@@ -6,7 +6,7 @@ skills:
 
 # Workflow: Import Test Results to Xray
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`jira_integration`** (tại `.claude/skills/jira_integration/SKILL.md`) để biết cách sử dụng scripts trước khi bắt đầu.
+> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`jira_integration`** (tại `.agent/skills/jira_integration/SKILL.md`) để biết cách sử dụng scripts trước khi bắt đầu.
 
 Workflow này giúp đẩy kết quả test automation lên Xray (Cloud hoặc Server/Data Center) để tracking trên Jira.
 

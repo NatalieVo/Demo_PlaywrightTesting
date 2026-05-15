@@ -5,7 +5,7 @@ skills:
   - requirements_analyzer
 ---
 
-> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt_manual_testing`** (tại `.claude/skills/rbt_manual_testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode FULL RBT** của skill. Ngoài ra, tham khảo thêm skill **`requirements_analyzer`** để hiểu cách phân tích giao diện nếu cần.
+> **BẮT BUỘC (MANDATORY SKILL):** Bạn PHẢI nạp và đọc kỹ nội dung của skill **`rbt_manual_testing`** (tại `.agent/skills/rbt_manual_testing/SKILL.md`) trước khi bắt đầu thực hiện tác vụ này. Sử dụng **Mode FULL RBT** của skill. Ngoài ra, tham khảo thêm skill **`requirements_analyzer`** để hiểu cách phân tích giao diện nếu cần.
 
 # Workflow: Sinh Manual Test Cases theo AI-RBT Framework (FULL RBT Mode)
 
@@ -51,8 +51,14 @@ Thực hiện theo hướng dẫn chi tiết trong skill `rbt_manual_testing` �
 1. Đánh giá Risk Level (High/Medium/Low) cho mỗi Module
 2. Sinh test cases đầy đủ: Title, Pre-condition, Steps, Expected, Test Data, Priority
 3. Áp dụng kỹ thuật: EP, BVA, Decision Table, State Transition
-4. Test Data phải cụ thể (không placeholder chung)
-5. Nếu quá nhiều → sinh từng Module, hỏi user để tiếp tục
+4. **Validation chuyên biệt từng trường (Field-Level Validation):**
+   - Liệt kê tất cả input fields trên form/UI đang test
+   - Sinh validation TCs **riêng cho TỪNG trường** theo đặc tính riêng
+   - Tham chiếu **Bảng Field-Level Validation** trong skill `rbt_manual_testing`
+   - **KHÔNG** gộp validation nhiều trường vào 1 TC
+5. Bao phủ đầy đủ: Happy Path, Negative, Boundary, Edge Cases
+6. Test Data phải cụ thể (không placeholder chung)
+7. Nếu quá nhiều → sinh từng Module, hỏi user để tiếp tục
 
 ### Bước 6: Chuẩn hóa Format (Template Mapping)
 1. Đóng gói toàn bộ test cases vào bảng Markdown chuẩn:

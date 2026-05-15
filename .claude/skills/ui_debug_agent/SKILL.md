@@ -227,8 +227,8 @@ Skill này có thể trả về:
 
 Agent PHẢI tuân thủ các rules chi tiết:
 
-- `.claude/rules/locator_strategy.md` — Master locator priority map
-- `.claude/rules/playwright_rules.md` — Playwright browser setup and locator rules
-- `.claude/rules/selenium_rules.md` — Selenium locator and wait rules
-- `.claude/rules/appium_rules.md` — Appium mobile locator rules
-- `.claude/rules/automation_rules.md` — General automation best practices
+- `.agent/rules/locator_strategy.md` — Master locator priority map
+- `.agent/rules/playwright_rules.md` — Playwright browser setup and locator rules
+- `.agent/rules/selenium_rules.md` — Selenium locator and wait rules
+- `.agent/rules/appium_rules.md` — Appium mobile locator rules
+- `.agent/rules/automation_rules.md` — General automation best practices

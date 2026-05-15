@@ -51,7 +51,7 @@ Detect flaky tests caused by:
 .css-1n2xyz-btn
 ```
 
-**Fix:** Replace with stable locator following priority in `.claude/rules/locator_strategy.md`:
+**Fix:** Replace with stable locator following priority in `.agent/rules/locator_strategy.md`:
 - `id`, `data-testid`, `name`, `css selector` (stable), `xpath` (relative)
 
 ---
@@ -64,7 +64,7 @@ Thread.sleep(3000);       // Hard sleep — BAD
 page.waitForTimeout(2000); // Fixed delay — BAD
 ```
 
-**Fix:** Use smart waits as defined in `.claude/rules/selenium_rules.md` and `.claude/rules/playwright_rules.md`:
+**Fix:** Use smart waits as defined in `.agent/rules/selenium_rules.md` and `.agent/rules/playwright_rules.md`:
 ```java
 // Selenium
 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -103,7 +103,7 @@ After fixing a flaky test, verify:
 
 The agent MUST follow these rules when analyzing flaky tests:
 
-- `.claude/rules/locator_strategy.md` — Locator stability rules
-- `.claude/rules/automation_rules.md` — General automation best practices
-- `.claude/rules/selenium_rules.md` — Selenium wait strategy
-- `.claude/rules/playwright_rules.md` — Playwright auto-waiting
+- `.agent/rules/locator_strategy.md` — Locator stability rules
+- `.agent/rules/automation_rules.md` — General automation best practices
+- `.agent/rules/selenium_rules.md` — Selenium wait strategy
+- `.agent/rules/playwright_rules.md` — Playwright auto-waiting

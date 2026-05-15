@@ -11,10 +11,10 @@ skills:
 > AI inspect DOM/UI hierarchy thực tế, sinh locator ổn định theo priority chuẩn, verify uniqueness, trả về kết quả.
 
 > **BẮT BUỘC (MANDATORY):** Trước khi bắt đầu, PHẢI nạp và đọc kỹ:
-> - **Skill:** `.claude/skills/smart_locator_agent/SKILL.md` — Quy trình sinh locator
-> - **Skill:** `.claude/skills/ui_debug_agent/SKILL.md` — Quy trình inspect DOM
-> - **Rule:** `.claude/rules/locator_strategy.md` — Bản đồ ưu tiên locator
-> - **Rule:** `.claude/rules/<framework>_rules.md` — Quy tắc riêng framework đang dùng
+> - **Skill:** `.agent/skills/smart_locator_agent/SKILL.md` — Quy trình sinh locator
+> - **Skill:** `.agent/skills/ui_debug_agent/SKILL.md` — Quy trình inspect DOM
+> - **Rule:** `.agent/rules/locator_strategy.md` — Bản đồ ưu tiên locator
+> - **Rule:** `.agent/rules/<framework>_rules.md` — Quy tắc riêng framework đang dùng
 
 ---
 
@@ -46,9 +46,9 @@ skills:
 
    | Framework | Rule file |
    |-----------|-----------|
-   | Playwright | `.claude/rules/playwright_rules.md` |
-   | Selenium | `.claude/rules/selenium_rules.md` |
-   | Appium | `.claude/rules/appium_rules.md` |
+   | Playwright | `.agent/rules/playwright_rules.md` |
+   | Selenium | `.agent/rules/selenium_rules.md` |
+   | Appium | `.agent/rules/appium_rules.md` |
 
 3. **Kiểm tra Page class hiện tại (nếu User chỉ định):**
    - Đọc file Page class → biết locator đã có sẵn

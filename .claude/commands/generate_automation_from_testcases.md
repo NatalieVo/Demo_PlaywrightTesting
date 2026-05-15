@@ -10,10 +10,10 @@ skills:
 # Workflow: Sinh Automation Scripts từ Manual Test Cases
 
 > **BẮT BUỘC (MANDATORY SKILLS):** Bạn PHẢI nạp và đọc kỹ nội dung các skills sau trước khi bắt đầu:
-> - **`qa_automation_engineer`** (`.claude/skills/qa_automation_engineer/SKILL.md`) — Quy tắc automation chung + workflow routing
-> - **`ui_debug_agent`** (`.claude/skills/ui_debug_agent/SKILL.md`) — Inspect DOM, thu thập locators
-> - **`smart_locator_agent`** (`.claude/skills/smart_locator_agent/SKILL.md`) — Sinh locator ổn định
-> - **`test_data_generator`** (`.claude/skills/test_data_generator/SKILL.md`) — Sinh test data unique, traceable
+> - **`qa_automation_engineer`** (`.agent/skills/qa_automation_engineer/SKILL.md`) — Quy tắc automation chung + workflow routing
+> - **`ui_debug_agent`** (`.agent/skills/ui_debug_agent/SKILL.md`) — Inspect DOM, thu thập locators
+> - **`smart_locator_agent`** (`.agent/skills/smart_locator_agent/SKILL.md`) — Sinh locator ổn định
+> - **`test_data_generator`** (`.agent/skills/test_data_generator/SKILL.md`) — Sinh test data unique, traceable
 
 Workflow này giúp agent đọc file manual test cases do user cung cấp, tự mở browser inspect UI, thu thập locators thực tế, sinh automation scripts hoàn chỉnh (POM + Test), chạy test và tự sửa lỗi cho đến khi PASS.
 
