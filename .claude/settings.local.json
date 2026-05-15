@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(mkdir -p test-results)",
+      "Bash(npx tsx *)",
+      "Bash(npm outdated *)",
+      "Bash(npm install *)"
+    ]
+  }
+}
