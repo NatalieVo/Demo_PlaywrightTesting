@@ -3,19 +3,18 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "baseUrl": "",
     "paths": {
       "@pages/*": [
-        "src/pages/*"
+        "./src/pages/*"
       ],
       "@utils/*": [
-        "src/utils/*"
+        "./src/utils/*"
       ],
       "@fixtures/*": [
-        "src/fixtures/*"
+        "./src/fixtures/*"
       ],
       "@test-data/*": [
-        "test-data/*"
+        "./test-data/*"
       ]
     },
     "types": ["node"],
