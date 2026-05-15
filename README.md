@@ -98,12 +98,19 @@ ClaudeCode_Playwright_Demo/
 │   ├── commands/                     # Slash commands (/generate-locator, /generate-manual-testcases-rbt...)
 │   ├── rules/                        # Quy tắc automation (playwright, selenium, appium, locator...)
 │   ├── skills/                       # AI Skills (qa_automation_engineer, ui_debug_agent...)
-│   └── settings.json                 # Permissions cho project
+│   ├── settings.json                 # Permissions cho project
+│   └── settings.local.json           # Permissions local (không commit lên git)
+├── .github/
+│   └── workflows/
+│       └── playwright.yml            # GitHub Actions CI/CD workflow
+├── CLAUDE.md                         # Hướng dẫn và quy tắc cho Claude Code AI Agent
 ├── playwright.config.ts              # Cấu hình Playwright: browsers, timeouts, reporters
 ├── package.json                      # Dependencies và npm scripts
 ├── tsconfig.json                     # Cấu hình TypeScript compiler
 ├── .env.example                      # Template biến môi trường
 ├── .env                              # Biến môi trường thực tế (không commit lên git)
+├── .gitignore                        # Git ignore rules
+├── LICENSE                           # MIT License
 ├── src/
 │   ├── pages/                        # Page Object Model classes
 │   │   ├── base.page.ts              # Class cha — methods dùng chung
