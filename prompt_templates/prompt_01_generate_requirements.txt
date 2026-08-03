@@ -1,0 +1,11 @@
+/generate_requirements_from_website
+
+# CONTEXT
+- System description: [Brief description of the current system, current module]
+- Website URL: [WEBSITE_URL]
+- Module Name: [MODULE_NAME]
+- Login credentials: [EMAIL] and [PASSWORD]
+
+# OUTPUT FORMAT
+# [Choose 1 of the formats: TXT / Markdown (.md)]
+- Export the final result document to a Markdown file. (e.g.: requirements_module_name.md)

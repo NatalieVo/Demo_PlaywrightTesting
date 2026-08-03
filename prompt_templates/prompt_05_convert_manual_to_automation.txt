@@ -1,0 +1,88 @@
+/generate_automation_from_testcases
+
+# CONTEXT
+- Framework: [Playwright / Selenium / Appium]
+- Language: [TypeScript / Java / Python]
+- Design Pattern: Page Object Model (POM)
+- Mode: FULL (auto-inspect UI + generate code + run test + auto-heal)
+
+# SYSTEM
+- URL: [application URL]
+- Test account: [Use existing fixture/config / or EMAIL + PASSWORD]
+- Environment: [Dev / Staging / Production]
+
+# PROJECT (choose 1 of 2)
+
+## A. Source code already exists (EXISTING PROJECT)
+- Project path: [path/to/project]
+- The agent MUST read the project structure, base classes, fixtures, config before generating code
+- The agent MUST follow existing conventions (naming, folder, patterns)
+- The agent MUST reuse base classes, fixtures, utils — DO NOT create duplicates
+- The agent MUST generate files in the correct location within the current project structure
+
+## B. No project yet (NEW PROJECT)
+- The agent scaffolds the structure itself following the /generate_automation_framework workflow
+
+# TEST CASES
+[One of 3 ways to provide test cases:]
+
+## Way 1: Paste directly
+| TC ID | Title | Steps | Expected Result | Priority |
+|---|---|---|---|---|
+| TC01 | Successful login | 1. Open login page 2. Enter valid email 3. Enter valid password 4. Click Login | Navigate to Dashboard | P1 |
+| TC02 | Login with wrong password | 1. Open login page 2. Enter valid email 3. Enter wrong password 4. Click Login | Display error message | P1 |
+
+## Way 2: File path
+Test cases file: [path/to/testcases.md]
+
+## Way 3: URL (Google Sheets, Confluence)
+Test cases URL: [https://docs.google.com/spreadsheets/...]
+
+# OUTPUT FORMAT
+- Page Object classes (Code generated in the correct location following conventions)
+- Test classes (Extend existing base/fixture, Arrange → Act → Assert)
+- Utilities / Data Generators (Reuse or add new ones)
+- Artifact task.md (progress checklist for each step)
+- Test run results (PASS/FAIL summary - test must PASS 2 times in a row)
+
+# NOTES
+- The agent opens the browser itself to inspect the UI, collecting real locators
+- The agent runs the test itself and auto-heals if it FAILS (Rule E3)
+- If existing project: the agent reads the code first → follows existing patterns
+
+
+
+
+
+/generate_automation_from_testcases
+
+# CONTEXT
+- Framework: [Playwright]
+- Language: [TypeScript]
+- Design Pattern: Page Object Model (POM)
+- Mode: FULL (auto-inspect UI + generate code + run test + auto-heal)
+
+# SYSTEM
+- URL: https://localhost, Click on the Shares folder
+- Test account: u1/111111Aa
+
+# PROJECT (choose 1 of 2)
+- The agent MUST read the project structure, base classes, fixtures, config before generating code
+- The agent MUST follow existing conventions (naming, folder, patterns)
+- The agent MUST reuse base classes, fixtures, utils — DO NOT create duplicates
+- The agent MUST generate files in the correct location within the current project structure
+
+# TEST CASES
+Test cases file: @/d:/AIAntigravityLearning/claude-testing-kit/playwright-framework/Shared_testcases.csv , from tc38 to tc45
+
+# OUTPUT FORMAT
+- Page Object classes (Code generated in the correct location following conventions)
+- Test classes (Extend existing base/fixture, Arrange → Act → Assert)
+- Utilities / Data Generators (Reuse or add new ones)
+- Artifact task.md (progress checklist for each step)
+- Test run results (PASS/FAIL summary - test must PASS 2 times in a row)
+
+# NOTES
+- The agent opens the browser itself to inspect the UI, collecting real locators
+- The agent runs the test itself and auto-heals if it FAILS (Rule E3)
+- If existing project: the agent reads the code first → follows existing patterns

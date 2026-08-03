@@ -1,0 +1,99 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: npx playwright test
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
+      - name: Get Allure history
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          keep_reports: 20
+
+      - name: Deploy Allure Report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
+      - name: Publish Allure Report link to job summary
+        if: always()
+        run: |
+          {
+            echo "## 📊 Allure Report"
+            echo ""
+            echo "The Allure report for this run has been published to GitHub Pages:"
+            echo ""
+            echo "👉 [View Allure Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.run_number }}/)"
+            echo ""
+            echo "_It may take a minute after this job finishes for GitHub Pages to finish deploying._"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload Allure Results
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: allure-results
+          path: allure-results/
+          retention-days: 30
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 30
