@@ -67,7 +67,9 @@ jobs:
         # with "src refspec gh-pages does not match any". Force-remove it first to avoid that.
         if: always()
         working-directory: .
-        run: chmod -R u+w allure-history/.git 2>/dev/null; rm -rf allure-history/.git
+        run: |
+          chmod -R u+w allure-history/.git 2>/dev/null || true
+          rm -rf allure-history/.git
 
       - name: Deploy Allure Report to GitHub Pages
         if: always()
@@ -114,3 +116,6 @@ jobs:
           name: test-results
           path: playwright-Framework/test-results/
           retention-days: 30
+          # test-results/ only exists when a test fails (screenshots/videos/traces);
+          # on an all-passing run there's nothing to upload, which is expected.
+          if-no-files-found: ignore
