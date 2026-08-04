@@ -1,6 +1,6 @@
 # Automation Generation Progress — Dashboard Module (24 TCs)
 
-- [x] Bước 1: Phân tích test cases (đọc `testcases_dashboard.csv`, 24 TCs)
+- [x] Bước 1: Phân tích test cases (đọc `Spec/testcases_dashboard.csv`, 24 TCs)
 - [x] Bước 2: Khảo sát UI (đăng nhập thật qua HTTP, lấy HTML server-render thực tế của `/admin/`; không có Playwright MCP browser tool trong session — dùng chính Playwright Test thật, browser thật, headed mode để verify + auto-heal)
 - [x] Bước 3: Thiết kế POM (mở rộng `DashboardPage`, tạo mới `HeaderPage`, `SidebarPage`)
 - [x] Bước 4: Chuẩn bị test data (thêm `DASHBOARD_URL` vào config; không cần data sinh động vì Dashboard là module hiển thị/điều hướng, không phải form nhập liệu)
@@ -84,6 +84,6 @@
 ## Known Issues / Limitations
 
 - Không có Playwright MCP browser tool — DOM verify qua HTTP thực tế (đăng nhập thật) + chạy Playwright Test thật trên browser thật (headed).
-- Test data widget (Quick Statistics, Todo badge...) là dữ liệu động của hệ thống demo dùng chung — test chỉ assert định dạng/khoảng giá trị hợp lệ, không assert số liệu cố định (đã ghi rõ trong `requirements_dashboard.md`).
+- Test data widget (Quick Statistics, Todo badge...) là dữ liệu động của hệ thống demo dùng chung — test chỉ assert định dạng/khoảng giá trị hợp lệ, không assert số liệu cố định (đã ghi rõ trong `Spec/requirements_dashboard.md`).
 - Ra khỏi phạm vi (theo thống nhất ban đầu): nội dung bên trong từng module con (Customers, Invoices, Projects...), chi tiết dữ liệu từng widget, tính năng tùy chỉnh "Dashboard Options".
 - WebKit thể hiện timing nhạy hơn Chromium/Firefox với site thật này (3 vòng auto-heal liên quan trực tiếp đến race condition chỉ xảy ra trên WebKit) — đã xử lý bằng web-first assertions thay vì đọc snapshot tức thời, không còn flaky sau khi fix.
