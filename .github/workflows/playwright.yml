@@ -60,16 +60,16 @@ jobs:
           keep_reports: 20
 
       - name: Remove stray nested .git from allure-history
-        # simple-elf/allure-report-action leaves a nested .git directory inside allure-history/
-        # with permission-restricted files. peaceiris/actions-gh-pages then fails to clean it up
-        # (rm: EACCES) and ends up merging that stale .git into its own temp repo, which makes the
-        # publish commit land on the wrong branch and the final `git push origin gh-pages` fail
-        # with "src refspec gh-pages does not match any". Force-remove it first to avoid that.
+        # simple-elf/allure-report-action runs as a Docker container action, so the nested .git
+        # directory it leaves inside allure-history/ ends up owned by root — the runner user has
+        # no permission to touch it (chmod as non-owner is a no-op). peaceiris/actions-gh-pages
+        # then fails to clean it up (rm: EACCES) and merges that stale .git into its own temp repo,
+        # which makes the publish commit land on the wrong branch and the final
+        # `git push origin gh-pages` fail with "src refspec gh-pages does not match any".
+        # Force-remove it with sudo first to avoid that.
         if: always()
         working-directory: .
-        run: |
-          chmod -R u+w allure-history/.git 2>/dev/null || true
-          rm -rf allure-history/.git
+        run: sudo rm -rf allure-history/.git
 
       - name: Deploy Allure Report to GitHub Pages
         if: always()
